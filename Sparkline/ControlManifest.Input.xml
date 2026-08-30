@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <!--
+    The version here is what the Power Platform upgrades on, and the release
+    workflow refuses to publish a tag that disagrees with it. Bump this in the
+    same commit as the tag.
+  -->
+  <control namespace="PCFHub"
+           constructor="Sparkline"
+           version="0.1.0"
+           display-name-key="Sparkline_Name"
+           description-key="Sparkline_Desc"
+           control-type="standard">
+
+    <external-service-usage enabled="false" />
+
+    <!--
+      The y column. A type group rather than a single `of-type` because a
+      number worth charting arrives as any of four types depending on how the
+      maker modelled it, and refusing three of them would be an arbitrary
+      restriction the control does not need: everything here reaches
+      `getValue()` as a JavaScript number.
+
+      Duration is deliberately absent. Its raw value is minutes while its
+      formatted value is "2 hours", so a chart drawn from the raw number
+      measures something the axis label does not say. pcf-grid-data-bars
+      excluded it for the same reason.
+    -->
+    <type-group name="sparklineValue">
+      <type>Whole.None</type>
+      <type>Decimal</type>
+      <type>FP</type>
+      <type>Currency</type>
+    </type-group>
+
+    <!--
+      The x column, which this control never sorts by and never parses. It is
+      read with `getFormattedValue()` and shown in the readout, so any type
+      that formats to something a person can read is admissible.
+    -->
+    <type-group name="sparklineCategory">
+      <type>SingleLine.Text</type>
+      <type>DateAndTime.DateOnly</type>
+      <type>DateAndTime.DateAndTime</type>
+      <type>Whole.None</type>
+      <type>OptionSet</type>
+    </type-group>
+
+    <!--
+      Roles rather than "whatever the view supplies", because this control does
+      assign meaning to specific columns: one is the series and one is its
+      labels. That is the case `property-set` exists for, and the fixed arity a
+      role list imposes costs nothing here — a sparkline draws one series.
+
+      The consequence, and it is the one that reached production in
+      pcf-tag-list: **a role is found on the column by `alias` and read off the
+      record by `name`.** `alias` is the role name written below; `name` is the
+      schema name of whatever the maker mapped to it. Get it backwards and the
+      control renders nothing against a real view while erroring nowhere.
+
+      Both dev/fixture.js and demo/records.json therefore set `alias` and
+      `name` to different strings, so a fixture cannot resolve the lookup in
+      whichever direction the code happens to have it.
+
+      No `cds-data-set-options`. A control with fixed roles does not survive
+      the user switching view, so the view selector is wrong for it; and the
+      command bar acts on a selection this control never reports.
+    -->
+    <data-set name="records" display-name-key="Records_DataSet_Name">
+      <property-set name="valueField"
+                    display-name-key="ValueField_Name"
+                    description-key="ValueField_Desc"
+                    of-type-group="sparklineValue"
+                    usage="bound"
+                    required="true" />
+      <!--
+        Optional on purpose. A series indexed by position — twelve readings, no
+        labels — is a real configuration, and requiring a label column would
+        refuse it. With no category bound the readout says "Point 3 of 12".
+      -->
+      <property-set name="categoryField"
+                    display-name-key="CategoryField_Name"
+                    description-key="CategoryField_Desc"
+                    of-type-group="sparklineCategory"
+                    usage="bound"
+                    required="false" />
+    </data-set>
+
+    <property name="chartType"
+              display-name-key="ChartType_Name"
+              description-key="ChartType_Desc"
+              of-type="Enum"
+              usage="input"
+              required="false"
+              default-value="line">
+      <value name="line" display-name-key="ChartType_Line_Name">line</value>
+      <value name="area" display-name-key="ChartType_Area_Name">area</value>
+      <value name="columns" display-name-key="ChartType_Columns_Name">columns</value>
+    </property>
+
+    <!--
+      The fallback height, in pixels. A host that reports an allocated height —
+      canvas, where the maker drags the control's box — overrides this; a
+      model-driven form reports -1 and this is what it gets. See index.ts.
+    -->
+    <property name="chartHeight"
+              display-name-key="ChartHeight_Name"
+              description-key="ChartHeight_Desc"
+              of-type="Whole.None"
+              usage="input"
+              required="false"
+              default-value="96" />
+
+    <!--
+      Defaults ON, and that is not a preference.
+
+      A `default-value` reaches PCFHub's demo harness as the raw XML *string*,
+      and `Boolean("false")` is `true` — so `default-value="false"` arrives
+      switched on in the one place the public sees the control. Defaulting to
+      `true` means a host that mishandles the default still lands where the
+      manifest said. index.ts reads it through a normaliser rather than trusting
+      `raw`, which covers the other direction.
+    -->
+    <property name="allowFullScreen"
+              display-name-key="AllowFullScreen_Name"
+              description-key="AllowFullScreen_Desc"
+              of-type="TwoOptions"
+              usage="input"
+              required="false"
+              default-value="true" />
+
+    <!--
+      How many records the series is drawn from. Not paging — there is no pager
+      and nothing calls loadNextPage — but the platform's default page is 25
+      records, which is a stub of a trend rather than a trend. Capped at 250 in
+      index.ts, which is the platform's own ceiling.
+    -->
+    <property name="pageSize"
+              display-name-key="PageSize_Name"
+              description-key="PageSize_Desc"
+              of-type="Whole.None"
+              usage="input"
+              required="false"
+              default-value="100" />
+
+    <!--
+      No outputs. This control reads a view and draws it; nothing it does is
+      worth reporting back to a form or a canvas app. An output property nobody
+      writes to is a row in the maker's property pane that never changes.
+    -->
+
+    <resources>
+      <code path="index.ts" order="1" />
+      <css path="css/Sparkline.css" order="1" />
+      <!--
+        Every language the control ships. A .resx on disk but missing here is
+        never packed, and nothing warns: the control runs in English for that
+        locale while the repository looks translated. `npm run check` catches
+        that, and a key missing from a language.
+
+        THE ORDER IS DELIBERATE AND 1033 GOES LAST. `pcf-start` picks the .resx
+        by manifest order rather than by locale — it reads whichever file is
+        listed last and ignores the LCID entirely. The platform itself ignores
+        the order completely, so `npm start` is the only thing in the world that
+        reads it. ADD A NEW LANGUAGE ABOVE THIS LINE: appending a sixth file
+        after 1033 silently moves the harness to that language, and the symptom
+        shows up in a session nobody connects to a manifest edit.
+      -->
+      <resx path="strings/Sparkline.3082.resx" version="1.0.0" />
+      <resx path="strings/Sparkline.1036.resx" version="1.0.0" />
+      <resx path="strings/Sparkline.1031.resx" version="1.0.0" />
+      <resx path="strings/Sparkline.1041.resx" version="1.0.0" />
+      <resx path="strings/Sparkline.1033.resx" version="1.0.0" />
+    </resources>
+
+    <!--
+      No `<feature-usage>`, and the block is deleted rather than left commented.
+
+      Every entry there is an install-time permission prompt for the maker, and
+      this control needs none: `setFullScreen` and `trackContainerResize` are
+      members of `context.mode`, which is not gated, and nothing here reaches
+      the Web API, the Utility API or a device.
+    -->
+  </control>
+</manifest>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Spanish (es-ES, LCID 3082).
+
+    Keep the key set identical to Sparkline.1033.resx. A key missing here does
+    not fall back to English — it renders as the key name, and only for users in
+    this language, so nobody who reads English ever sees it. `npm run check`
+    compares the two.
+
+    Sparkline and A compact trend chart over any Dataverse view. are filled by `npm run setup` with the English
+    title and tagline you gave it, because the template cannot know them. They
+    are the two values in this file worth translating by hand.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+<data name="Sparkline_Name" xml:space="preserve">
+    <value>Minigráfico</value>
+  </data>
+  <data name="Sparkline_Desc" xml:space="preserve">
+    <value>Un gráfico de tendencia compacto sobre cualquier vista de Dataverse.</value>
+  </data>
+
+  <data name="Records_DataSet_Name" xml:space="preserve">
+    <value>Registros</value>
+  </data>
+
+  <data name="ValueField_Name" xml:space="preserve">
+    <value>Valor</value>
+  </data>
+  <data name="ValueField_Desc" xml:space="preserve">
+    <value>La columna numérica que se representa. Un punto por registro, en el orden de la vista.</value>
+  </data>
+  <data name="CategoryField_Name" xml:space="preserve">
+    <value>Etiqueta</value>
+  </data>
+  <data name="CategoryField_Desc" xml:space="preserve">
+    <value>La columna que da nombre a cada punto. Opcional: sin ella, los puntos se numeran.</value>
+  </data>
+
+  <data name="ChartType_Name" xml:space="preserve">
+    <value>Tipo de gráfico</value>
+  </data>
+  <data name="ChartType_Desc" xml:space="preserve">
+    <value>La línea y el área se ajustan al rango de los datos. Las columnas empiezan en cero.</value>
+  </data>
+  <data name="ChartType_Line_Name" xml:space="preserve">
+    <value>Línea</value>
+  </data>
+  <data name="ChartType_Area_Name" xml:space="preserve">
+    <value>Área</value>
+  </data>
+  <data name="ChartType_Columns_Name" xml:space="preserve">
+    <value>Columnas</value>
+  </data>
+
+  <data name="ChartHeight_Name" xml:space="preserve">
+    <value>Alto</value>
+  </data>
+  <data name="ChartHeight_Desc" xml:space="preserve">
+    <value>Alto en píxeles, usado cuando el host no dimensiona el control.</value>
+  </data>
+  <data name="AllowFullScreen_Name" xml:space="preserve">
+    <value>Permitir expandir</value>
+  </data>
+  <data name="AllowFullScreen_Desc" xml:space="preserve">
+    <value>Muestra un botón que expande el gráfico para ocupar el formulario.</value>
+  </data>
+  <data name="PageSize_Name" xml:space="preserve">
+    <value>Registros que representar</value>
+  </data>
+  <data name="PageSize_Desc" xml:space="preserve">
+    <value>Cuántos registros forman la serie. La plataforma limita este valor a 250.</value>
+  </data>
+
+  <data name="Sparkline_Loading" xml:space="preserve">
+    <value>Cargando registros…</value>
+  </data>
+  <data name="Sparkline_Empty" xml:space="preserve">
+    <value>No hay registros que representar.</value>
+  </data>
+  <data name="Sparkline_NoValueColumn" xml:space="preserve">
+    <value>Enlace una columna numérica a Valor para dibujar el gráfico.</value>
+  </data>
+  <data name="Sparkline_NoNumbers" xml:space="preserve">
+    <value>La columna enlazada no contiene números, así que no hay nada que dibujar.</value>
+  </data>
+  <data name="Sparkline_Error" xml:space="preserve">
+    <value>No se pudo cargar esta vista.</value>
+  </data>
+
+  <data name="Sparkline_Expand" xml:space="preserve">
+    <value>Expandir gráfico</value>
+  </data>
+  <data name="Sparkline_Collapse" xml:space="preserve">
+    <value>Contraer gráfico</value>
+  </data>
+
+  <data name="Sparkline_PointsGroup" xml:space="preserve">
+    <value>Puntos del gráfico</value>
+  </data>
+  <data name="Sparkline_PointOf" xml:space="preserve">
+    <value>Punto {0} de {1}</value>
+  </data>
+  <data name="Sparkline_Readout" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+
+  <data name="Sparkline_SummaryLine" xml:space="preserve">
+    <value>Gráfico de línea de {0}. {1} puntos, de {2} a {3}.</value>
+  </data>
+  <data name="Sparkline_SummaryArea" xml:space="preserve">
+    <value>Gráfico de área de {0}. {1} puntos, de {2} a {3}.</value>
+  </data>
+  <data name="Sparkline_SummaryColumns" xml:space="preserve">
+    <value>Gráfico de columnas de {0}. {1} puntos, de {2} a {3}.</value>
+  </data>
+  <data name="Sparkline_SummaryFlat" xml:space="preserve">
+    <value>{0} tiene el mismo valor en todos los puntos: {1}.</value>
+  </data>
+  <data name="Sparkline_SkippedBlank" xml:space="preserve">
+    <value>Registros sin valor: {0}.</value>
+  </data>
+  <data name="Sparkline_SkippedUnreadable" xml:space="preserve">
+    <value>Registros con texto que no es un número: {0}.</value>
+  </data>
+</root>

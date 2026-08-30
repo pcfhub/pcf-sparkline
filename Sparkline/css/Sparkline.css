@@ -1,0 +1,345 @@
+/*
+  Every rule is scoped under .Sparkline.
+
+  A code component's CSS is loaded into the whole page, not into a shadow root,
+  so an unscoped `svg { }` here restyles the host form.
+*/
+
+/*
+  The palette, as Fluent's design tokens with literal fallbacks.
+
+  `FluentProvider` is what emits the tokens as CSS custom properties on its own
+  wrapper, and a model-driven form already mounts one above every code component
+  on the page — so a plain-DOM control reads them without mounting anything, and
+  follows the app's theme and brand colour with no code at all. The fallbacks
+  are what it looks like where nothing publishes them: a canvas app, or PCFHub's
+  demo harness.
+
+  They are Fluent's web light theme, read from `@fluentui/tokens` rather than
+  eyeballed.
+
+  Declared once here rather than at each use site, because the dark set below
+  has to redefine them and a palette scattered through the file is a palette
+  that cannot be.
+*/
+.Sparkline {
+    --Sparkline-foreground: var(--colorNeutralForeground1, #242424);
+    --Sparkline-foreground-secondary: var(--colorNeutralForeground3, #616161);
+    --Sparkline-foreground-danger: var(--colorPaletteRedForeground1, #bc2f32);
+    --Sparkline-background: var(--colorNeutralBackground1, #ffffff);
+    --Sparkline-background-hover: var(--colorNeutralBackground1Hover, #f5f5f5);
+    --Sparkline-background-pressed: var(--colorNeutralBackground1Pressed, #e0e0e0);
+    --Sparkline-stroke: var(--colorNeutralStroke1, #d1d1d1);
+    --Sparkline-stroke-hover: var(--colorNeutralStroke1Hover, #c7c7c7);
+    --Sparkline-focus-inner: var(--colorStrokeFocus1, #ffffff);
+    --Sparkline-focus-outer: var(--colorStrokeFocus2, #000000);
+
+    /*
+      The series takes the app's brand colour. That is the whole reason there is
+      no colour property on this control: on a real form the token is already
+      the customer's brand, and a maker-supplied hex would override it with
+      something that matches nothing else on the page.
+    */
+    --Sparkline-accent: var(--colorBrandForeground1, #0f6cbd);
+
+    --Sparkline-radius: var(--borderRadiusMedium, 4px);
+    --Sparkline-duration: var(--durationFaster, 100ms);
+    --Sparkline-curve: var(--curveEasyEase, cubic-bezier(0.33, 0, 0.67, 1));
+
+    /* index.ts sets the real value on .Sparkline-plot; this is the floor. */
+    --Sparkline-height: 96px;
+
+    font-family: var(--fontFamilyBase, "Segoe UI", system-ui, sans-serif);
+    font-size: var(--fontSizeBase300, 14px);
+    color: var(--Sparkline-foreground);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingVerticalXS, 4px);
+    width: 100%;
+}
+
+/*
+  The dark fallbacks, applied from `fluentDesignLanguage.isDarkTheme` in
+  `index.ts` rather than from `prefers-color-scheme`. A model-driven app carries
+  its own theme and the operating system's setting says nothing about it, so the
+  media query would hand an OS-dark machine on a light app a dark chart on a
+  white form.
+
+  This block only bites on a host that publishes no tokens. Where they are
+  published, every `var()` above resolves and none of these is reached.
+*/
+.Sparkline--dark {
+    --Sparkline-foreground: var(--colorNeutralForeground1, #ffffff);
+    --Sparkline-foreground-secondary: var(--colorNeutralForeground3, #adadad);
+    --Sparkline-foreground-danger: var(--colorPaletteRedForeground1, #e37d80);
+    --Sparkline-background: var(--colorNeutralBackground1, #292929);
+    --Sparkline-background-hover: var(--colorNeutralBackground1Hover, #3d3d3d);
+    --Sparkline-background-pressed: var(--colorNeutralBackground1Pressed, #1f1f1f);
+    --Sparkline-stroke: var(--colorNeutralStroke1, #666666);
+    --Sparkline-stroke-hover: var(--colorNeutralStroke1Hover, #757575);
+    --Sparkline-focus-inner: var(--colorStrokeFocus1, #000000);
+    --Sparkline-focus-outer: var(--colorStrokeFocus2, #ffffff);
+    --Sparkline-accent: var(--colorBrandForeground1, #479ef5);
+}
+
+.Sparkline-message {
+    margin: 0;
+    padding: var(--spacingVerticalL, 16px);
+    color: var(--Sparkline-foreground-secondary);
+}
+
+/*
+  The series in words, for a reader who is not looking at the picture. Hidden
+  rather than absent: a chart that silently skipped four records is a chart that
+  lies by omission, and this is where it owns up.
+*/
+.Sparkline-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.Sparkline-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacingHorizontalS, 8px);
+    min-height: 24px;
+}
+
+.Sparkline-title {
+    font-weight: var(--fontWeightSemibold, 600);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.Sparkline-expand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /*
+      24px is the smallest target Fluent ships and it is smaller than the 44px
+      WCAG asks for. The honest version of the trade: a chart that adds a
+      44px-tall button to a form section changes the height of the section it
+      is in, and this control's job is to be compact. The button is not the only
+      way to reach anything — nothing behind it is unavailable without it.
+    */
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--Sparkline-radius);
+    background: transparent;
+    color: var(--Sparkline-foreground-secondary);
+    cursor: pointer;
+    transition: background-color var(--Sparkline-duration) var(--Sparkline-curve);
+}
+
+.Sparkline-expand:hover {
+    background: var(--Sparkline-background-hover);
+    border-color: var(--Sparkline-stroke-hover);
+    color: var(--Sparkline-foreground);
+}
+
+.Sparkline-expand:active {
+    background: var(--Sparkline-background-pressed);
+}
+
+.Sparkline-glyph {
+    width: 16px;
+    height: 16px;
+}
+
+.Sparkline-plot {
+    position: relative;
+    width: 100%;
+    height: var(--Sparkline-height);
+}
+
+/*
+  The expanded state grows in place. It is deliberately not `position: fixed`.
+
+  A code component that pins itself over the form escapes the form's stacking
+  context, covers the command bar, and takes ownership of an Esc key it cannot
+  promise to receive. Where the platform supports it, `mode.setFullScreen()` has
+  already given this control the whole form area and this height simply fills
+  it; where it does not, growing in place is a smaller promise and one the
+  control can keep on its own.
+*/
+.Sparkline--fullscreen .Sparkline-plot {
+    height: 70vh;
+}
+
+/*
+  Fixed viewBox, stretched to the box. Every stroked element below therefore
+  carries `vector-effect: non-scaling-stroke`: without it a wide short box draws
+  a line fat on one axis and thin on the other.
+*/
+.Sparkline-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.Sparkline-line {
+    fill: none;
+    stroke: var(--Sparkline-accent);
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.Sparkline-area {
+    fill: var(--Sparkline-accent);
+    fill-opacity: 0.16;
+    stroke: none;
+}
+
+.Sparkline-column {
+    fill: var(--Sparkline-accent);
+    fill-opacity: 0.85;
+}
+
+.Sparkline-column--negative {
+    fill: var(--Sparkline-foreground-danger);
+}
+
+/*
+  A DOM circle rather than an SVG one, and that is the reason the marker is not
+  drawn with the rest of the chart: `preserveAspectRatio="none"` scales the two
+  axes differently, so an SVG circle arrives as an ellipse in every box that is
+  not 15:4. A positioned element is round whatever the box does.
+*/
+.Sparkline-marker {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    margin: 0;
+    border: 2px solid var(--Sparkline-accent);
+    border-radius: 50%;
+    background: var(--Sparkline-background);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.Sparkline-hits {
+    position: absolute;
+    inset: 0;
+}
+
+/*
+  One button per point, invisible, over the picture.
+
+  They are narrow — as narrow as the spacing between points — and that is a
+  known trade rather than an oversight: a series of 100 points cannot give each
+  reading a 24px target inside a 300px box. The keyboard path is the one that
+  scales, which is why the group is a single tab stop with arrow keys rather
+  than 100 tab stops, and why every point carries its own accessible name.
+*/
+.Sparkline-hit {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: translateX(-50%);
+    cursor: pointer;
+}
+
+/* A column's target is its own slot, which is already positioned by its edge. */
+.Sparkline-hit--slot {
+    transform: none;
+}
+
+/*
+  Fluent's focus indicator: a dark ring with a light one immediately inside it,
+  so the shape survives against a light surface and a dark one. A single outline
+  disappears into whichever background happens to match it.
+*/
+.Sparkline-expand:focus-visible,
+.Sparkline-hit:focus-visible {
+    outline: 2px solid var(--Sparkline-focus-outer);
+    outline-offset: -1px;
+    box-shadow: 0 0 0 2px var(--Sparkline-focus-inner);
+    border-radius: var(--Sparkline-radius);
+}
+
+.Sparkline-readout {
+    margin: 0;
+    min-height: 1.4em;
+    color: var(--Sparkline-foreground-secondary);
+    font-size: var(--fontSizeBase200, 12px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+  Forced colours, where this control has more to lose than most.
+
+  A chart's whole signal is colour, and forced colours takes it: `fill` and
+  `stroke` are overridden to system keywords, so a line, an area and a column
+  all arrive the same colour as each other and as the text. The line survives
+  because a stroke is still a shape; the area and the columns are given an
+  outline so that "there is a region here" is drawn rather than filled, which is
+  the same call pcf-grid-data-bars made for its bars.
+*/
+@media (forced-colors: active) {
+    .Sparkline-line {
+        stroke: CanvasText;
+    }
+
+    .Sparkline-area {
+        fill: none;
+        stroke: CanvasText;
+        stroke-width: 1px;
+        stroke-dasharray: 2 2;
+        vector-effect: non-scaling-stroke;
+    }
+
+    .Sparkline-column {
+        fill: Canvas;
+        stroke: CanvasText;
+        stroke-width: 1px;
+        vector-effect: non-scaling-stroke;
+    }
+
+    /* Negative columns lose their colour, so they keep a different edge. */
+    .Sparkline-column--negative {
+        fill: Canvas;
+        stroke-dasharray: 2 2;
+    }
+
+    .Sparkline-marker {
+        border-color: Highlight;
+        background: Canvas;
+    }
+
+    .Sparkline-expand {
+        border-color: ButtonBorder;
+        color: ButtonText;
+    }
+
+    .Sparkline-expand:focus-visible,
+    .Sparkline-hit:focus-visible {
+        outline-color: Highlight;
+    }
+}
+
+/*
+  Shortened, not removed. The only transition here is the expand button's hover,
+  which carries no state on its own, so cutting it to nothing loses nothing.
+*/
+@media screen and (prefers-reduced-motion: reduce) {
+    .Sparkline-expand {
+        transition-duration: 0.01ms;
+    }
+}

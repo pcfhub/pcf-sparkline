@@ -1,0 +1,85 @@
+{
+    "targetEntityType": "cr123_monthlyrevenue",
+    "title": "Revenue by month",
+    "columns": [
+        {
+            "name": "cr123_periodlabel",
+            "displayName": "Period",
+            "dataType": "SingleLine.Text",
+            "alias": "categoryField",
+            "order": 0,
+            "visualSizeFactor": 120,
+            "isPrimary": true
+        },
+        {
+            "name": "cr123_revenue",
+            "displayName": "Revenue",
+            "dataType": "Currency",
+            "alias": "valueField",
+            "order": 1,
+            "visualSizeFactor": 100
+        }
+    ],
+    "records": [
+        {
+            "id": "d01",
+            "values": { "cr123_periodlabel": "Jan", "cr123_revenue": 420 },
+            "formatted": { "cr123_revenue": "$420" }
+        },
+        {
+            "id": "d02",
+            "values": { "cr123_periodlabel": "Feb", "cr123_revenue": 480 },
+            "formatted": { "cr123_revenue": "$480" }
+        },
+        {
+            "id": "d03",
+            "values": { "cr123_periodlabel": "Mar", "cr123_revenue": 610 },
+            "formatted": { "cr123_revenue": "$610" }
+        },
+        {
+            "id": "d04",
+            "values": { "cr123_periodlabel": "Apr", "cr123_revenue": 585 },
+            "formatted": { "cr123_revenue": "$585" }
+        },
+        {
+            "id": "d05",
+            "values": { "cr123_periodlabel": "May", "cr123_revenue": 720 },
+            "formatted": { "cr123_revenue": "$720" }
+        },
+        {
+            "id": "d06",
+            "values": { "cr123_periodlabel": "Jun", "cr123_revenue": 690 },
+            "formatted": { "cr123_revenue": "$690" }
+        },
+        {
+            "id": "d07",
+            "values": { "cr123_periodlabel": "Jul", "cr123_revenue": 540 },
+            "formatted": { "cr123_revenue": "$540" }
+        },
+        {
+            "id": "d08",
+            "values": { "cr123_periodlabel": "Aug", "cr123_revenue": 505 },
+            "formatted": { "cr123_revenue": "$505" }
+        },
+        {
+            "id": "d09",
+            "values": { "cr123_periodlabel": "Sep", "cr123_revenue": 640 },
+            "formatted": { "cr123_revenue": "$640" }
+        },
+        {
+            "id": "d10",
+            "values": { "cr123_periodlabel": "Oct", "cr123_revenue": 810 },
+            "formatted": { "cr123_revenue": "$810" }
+        },
+        {
+            "id": "d11",
+            "values": { "cr123_periodlabel": "Nov", "cr123_revenue": 940 },
+            "formatted": { "cr123_revenue": "$940" }
+        },
+        {
+            "id": "d12",
+            "values": { "cr123_periodlabel": "Dec", "cr123_revenue": 1120 },
+            "formatted": { "cr123_revenue": "$1,120" }
+        }
+    ]
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "slug": "pcf-sparkline",
+  "name": "Sparkline",
+  "tagline": "A compact trend chart over any Dataverse view.",
+  "category": "data",
+  "tags": [
+    "dataset",
+    "chart",
+    "sparkline",
+    "trend",
+    "svg",
+    "accessible"
+  ],
+  "control": {
+    "namespace": "PCFHub",
+    "constructor": "Sparkline",
+    "type": "dataset",
+    "framework": "standard",
+    "manifestPath": "Sparkline/ControlManifest.Input.xml"
+  },
+  "links": {
+    "homepage": "https://github.com/pcfhub/pcf-sparkline",
+    "support": "https://github.com/pcfhub/pcf-sparkline/issues",
+    "license": "MIT"
+  },
+  "docs": {
+    "path": "docs"
+  },
+  "media": {
+    "logo": "media/logo.png",
+    "screenshots": [
+      "media/screenshot.png",
+      "media/screenshot-columns.png",
+      "media/screenshot-dark.png"
+    ]
+  },
+  "demo": {
+    "fidelity": "limited",
+    "bundle": "out/controls/Sparkline/bundle.js",
+    "styles": [
+      "out/controls/Sparkline/css/Sparkline.css"
+    ],
+    "datasetFixture": "demo/records.json",
+    "limitations": [
+      "Expand does not take over the page here. On a form the control calls context.mode.setFullScreen(), which is the platform handing the whole form area to one component; the demo harness has no such call to honour, so the button takes the same fallback it takes on any host that lacks it and the chart grows in place. Everything else about it is real — the label swaps, focus returns to it, and clicking again collapses.",
+      "Records to chart does nothing. The harness puts every fixture record on one page and its setPageSize() is an empty function, so the property is visible and inert. On a real view it is how many records the series is drawn from, capped by the platform at 250.",
+      "The order is the fixture's. On a view the order is the view's own sort, applied server-side — this control never reorders records in the browser, because a client-side sort would reorder only the records it was handed and not the view behind them. There is no sort behind this origin for it to follow."
+    ],
+    "presets": [
+      {
+        "slug": "line",
+        "name": "Line",
+        "description": "Twelve months of revenue as a line. The domain is the range of the data, so the shape of the year is what the chart is about.",
+        "props": {
+          "chartType": "line",
+          "chartHeight": 96,
+          "allowFullScreen": true,
+          "pageSize": 100
+        },
+        "isDefault": true
+      },
+      {
+        "slug": "area",
+        "name": "Area",
+        "description": "The same readings filled to the baseline, which reads as volume rather than as movement.",
+        "props": {
+          "chartType": "area",
+          "chartHeight": 120,
+          "allowFullScreen": true,
+          "pageSize": 100
+        }
+      },
+      {
+        "slug": "columns",
+        "name": "Columns",
+        "description": "The same readings as columns — and the one preset whose domain starts at zero, because a column encodes magnitude by length and a non-zero baseline would lie about the ratios.",
+        "props": {
+          "chartType": "columns",
+          "chartHeight": 120,
+          "allowFullScreen": true,
+          "pageSize": 100
+        }
+      },
+      {
+        "slug": "tall-fixed",
+        "name": "Tall, no expanding",
+        "description": "A taller chart with the Expand button switched off — the configuration for a form section that is already the size it wants to be.",
+        "props": {
+          "chartType": "area",
+          "chartHeight": 200,
+          "allowFullScreen": false,
+          "pageSize": 100
+        }
+      }
+    ]
+  }
+}

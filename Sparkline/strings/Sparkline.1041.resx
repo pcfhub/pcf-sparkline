@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Japanese (ja-JP, LCID 1041).
+
+    Keep the key set identical to Sparkline.1033.resx. A key missing here does
+    not fall back to English — it renders as the key name, and only for users in
+    this language, so nobody who reads English ever sees it. `npm run check`
+    compares the two.
+
+    Sparkline and A compact trend chart over any Dataverse view. are filled by `npm run setup` with the English
+    title and tagline you gave it, because the template cannot know them. They
+    are the two values in this file worth translating by hand.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+<data name="Sparkline_Name" xml:space="preserve">
+    <value>スパークライン</value>
+  </data>
+  <data name="Sparkline_Desc" xml:space="preserve">
+    <value>Dataverse の任意のビューをコンパクトなトレンドチャートで表示します。</value>
+  </data>
+
+  <data name="Records_DataSet_Name" xml:space="preserve">
+    <value>レコード</value>
+  </data>
+
+  <data name="ValueField_Name" xml:space="preserve">
+    <value>値</value>
+  </data>
+  <data name="ValueField_Desc" xml:space="preserve">
+    <value>チャート化する数値列。ビューの並び順のまま、レコードごとに 1 点。</value>
+  </data>
+  <data name="CategoryField_Name" xml:space="preserve">
+    <value>ラベル</value>
+  </data>
+  <data name="CategoryField_Desc" xml:space="preserve">
+    <value>各点の名前になる列。任意です。指定しない場合は番号が使われます。</value>
+  </data>
+
+  <data name="ChartType_Name" xml:space="preserve">
+    <value>チャートの種類</value>
+  </data>
+  <data name="ChartType_Desc" xml:space="preserve">
+    <value>折れ線と面はデータの範囲に合わせて拡大縮小し、柱はゼロから始まります。</value>
+  </data>
+  <data name="ChartType_Line_Name" xml:space="preserve">
+    <value>折れ線</value>
+  </data>
+  <data name="ChartType_Area_Name" xml:space="preserve">
+    <value>面</value>
+  </data>
+  <data name="ChartType_Columns_Name" xml:space="preserve">
+    <value>柱</value>
+  </data>
+
+  <data name="ChartHeight_Name" xml:space="preserve">
+    <value>高さ</value>
+  </data>
+  <data name="ChartHeight_Desc" xml:space="preserve">
+    <value>ピクセル単位の高さ。ホストがサイズを指定しない場合に使われます。</value>
+  </data>
+  <data name="AllowFullScreen_Name" xml:space="preserve">
+    <value>拡大を許可</value>
+  </data>
+  <data name="AllowFullScreen_Desc" xml:space="preserve">
+    <value>チャートをフォーム全体に拡大するボタンを表示します。</value>
+  </data>
+  <data name="PageSize_Name" xml:space="preserve">
+    <value>チャート化するレコード数</value>
+  </data>
+  <data name="PageSize_Desc" xml:space="preserve">
+    <value>系列を描画するレコード数。プラットフォームの上限は 250 です。</value>
+  </data>
+
+  <data name="Sparkline_Loading" xml:space="preserve">
+    <value>レコードを読み込んでいます…</value>
+  </data>
+  <data name="Sparkline_Empty" xml:space="preserve">
+    <value>チャート化するレコードがありません。</value>
+  </data>
+  <data name="Sparkline_NoValueColumn" xml:space="preserve">
+    <value>チャートを描くには、数値列を [値] にバインドしてください。</value>
+  </data>
+  <data name="Sparkline_NoNumbers" xml:space="preserve">
+    <value>バインドされた列に数値がないため、描画できません。</value>
+  </data>
+  <data name="Sparkline_Error" xml:space="preserve">
+    <value>このビューを読み込めませんでした。</value>
+  </data>
+
+  <data name="Sparkline_Expand" xml:space="preserve">
+    <value>チャートを拡大</value>
+  </data>
+  <data name="Sparkline_Collapse" xml:space="preserve">
+    <value>チャートを縮小</value>
+  </data>
+
+  <data name="Sparkline_PointsGroup" xml:space="preserve">
+    <value>チャートのデータ点</value>
+  </data>
+  <data name="Sparkline_PointOf" xml:space="preserve">
+    <value>{1} 点中 {0} 点目</value>
+  </data>
+  <data name="Sparkline_Readout" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+
+  <data name="Sparkline_SummaryLine" xml:space="preserve">
+    <value>{0} の折れ線チャート。{1} 点、{2} から {3} まで。</value>
+  </data>
+  <data name="Sparkline_SummaryArea" xml:space="preserve">
+    <value>{0} の面チャート。{1} 点、{2} から {3} まで。</value>
+  </data>
+  <data name="Sparkline_SummaryColumns" xml:space="preserve">
+    <value>{0} の柱チャート。{1} 点、{2} から {3} まで。</value>
+  </data>
+  <data name="Sparkline_SummaryFlat" xml:space="preserve">
+    <value>{0} はすべての点で同じ値です: {1}。</value>
+  </data>
+  <data name="Sparkline_SkippedBlank" xml:space="preserve">
+    <value>値のないレコード: {0} 件。</value>
+  </data>
+  <data name="Sparkline_SkippedUnreadable" xml:space="preserve">
+    <value>数値でないテキストを含むレコード: {0} 件。</value>
+  </data>
+</root>
