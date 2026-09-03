@@ -63,6 +63,7 @@
             quirks: {
                 hasFullScreen: document.getElementById('harness-fullscreen').checked,
                 sortingAbsent: document.getElementById('harness-nosorting').checked,
+                heightUnmeasured: document.getElementById('harness-noheight').checked,
             },
         };
     }

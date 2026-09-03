@@ -235,9 +235,15 @@ if (typeof registration.ctor !== 'function') {
 
 const view = bind();
 
+/*
+ * **One pass, where this used to be two.** The second was the page size: the
+ * property carried `default-value="100"`, so every mount called `setPageSize`
+ * and `refresh()` — a round trip, and an override of however many rows the host
+ * had already decided to fetch. With no default there is nothing to ask for.
+ */
 check(
     'settles instead of refreshing forever',
-    !view.driven.looping && view.driven.passes === 2,
+    !view.driven.looping && view.driven.passes === 1,
     `${view.driven.passes} passes, ${view.driven.looping ? 'still owed' : 'settled'}`,
 );
 
@@ -250,10 +256,44 @@ check(
 view.settle();
 view.settle();
 
+/*
+ * The assertion about a call that must **not** happen.
+ *
+ * This file used to require exactly one `setPageSize`, which was the defect
+ * written down as a test: a maker who never touched the property still produced
+ * a control that told the host how many rows to fetch. A chart wants as many
+ * points as it can get, and that is still not a reason to override a number the
+ * host has already settled — the maker who wants a longer series sets it.
+ */
 check(
-    'asks for a page size once and then stops asking',
-    view.calls().filter((call) => call.startsWith('setPageSize')).length === 1,
+    'an unset page size overrides nothing — the host is already paging',
+    view.calls().filter((call) => call.startsWith('setPageSize')).length === 0,
     view.calls().join(' '),
+);
+
+const overriding = bind({ inputs: { pageSize: 3 } });
+
+overriding.settle();
+overriding.settle();
+
+check(
+    'a page size the maker did set is asked for once and then left alone',
+    overriding.calls().filter((call) => call.startsWith('setPageSize')).length === 1,
+    overriding.calls().join(' '),
+);
+
+/*
+ * A main grid answers the width and never the height — `-1` for the life of the
+ * control, however politely it asks. This chart already treats `-1` and `0` as
+ * "no answer" on the height, which is the rule it wrote down; the switch is
+ * what turns that from a claim into an assertion.
+ */
+const unmeasured = bind({ width: 900, quirks: { heightUnmeasured: true } });
+
+check(
+    'renders on a host that measures a width and never a height',
+    unmeasured.handle.context.mode.allocatedHeight === -1 && !unmeasured.driven.looping,
+    `allocatedHeight ${unmeasured.handle.context.mode.allocatedHeight}`,
 );
 
 check(
