@@ -1,20 +1,33 @@
 <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Template placeholder. The top face of the PCFHub mark on its own: one
-       component rather than the whole stack.
+  <!-- A trend, and the point it has reached.
 
-       Geometry, ramp and inner diamond are the original's verbatim, shifted
-       down 19 so a face that sits at the top of the full mark is centred when
-       it stands alone. The gradient is declared in userSpaceOnUse, so its
-       coordinates move by the same 19; leaving them at the original 29 and 9
-       would slide the ramp off the shape.
+       No frame: a sparkline is a chart with the chart taken away, so the mark
+       is the line and nothing else. The dot at the end is the current value,
+       which is the one thing a sparkline is read for.
+
+       The ramp is the PCFHub mark's own, verbatim, so this sits in the family rather
+       than beside it. Declared in userSpaceOnUse and spanning the whole 96
+       canvas, so the mark reads as one object lit from the top right.
+       The line samples the ramp across its whole run, so the rise is also a
+       move from violet into blue.
+
+       Drawn for 32px. The dot is a ramp circle of r 10 with a white r 4.5 inside
+       rather than a plain white cap: at stroke 11 the line's own round cap is
+       r 5.5, and a white dot placed straight on it leaves a ring one unit wide
+       that closes up into a grey smudge by 24.
 
        Note: no double hyphen may appear in this comment, or the whole document
        fails to parse as XML. -->
   <defs>
-    <linearGradient id="mark-top" x1="8" y1="48" x2="88" y2="28" gradientUnits="userSpaceOnUse">
+    <linearGradient id="sparkline-ramp" x1="4" y1="80" x2="92" y2="16" gradientUnits="userSpaceOnUse">
       <stop stop-color="#A684FF"/><stop offset="0.6" stop-color="#7C86FF"/><stop offset="1" stop-color="#00BCFF"/>
     </linearGradient>
   </defs>
-  <path d="M48 28 88 48 48 68 8 48Z" fill="url(#mark-top)"/>
-  <path d="M48 41.5 61 48 48 54.5 35 48Z" fill="#F8FAFC" fill-opacity="0.92"/>
+  <!-- The trend. -->
+  <path d="M12 70 L31 48 L45 60 L61 30 L80 20" stroke="url(#sparkline-ramp)" stroke-width="11"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- The current value. -->
+  <circle cx="80" cy="20" r="10" fill="url(#sparkline-ramp)"/>
+  <circle cx="80" cy="20" r="4.5" fill="#F8FAFC"/>
 </svg>
