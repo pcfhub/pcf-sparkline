@@ -4,8 +4,8 @@
   "name": "Sparkline",
   "tagline": "A compact trend chart over any Dataverse view.",
   "category": "data",
+  "hosts": ["canvas", "model-driven"],
   "tags": [
-    "dataset",
     "chart",
     "sparkline",
     "trend",
