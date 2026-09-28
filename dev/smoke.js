@@ -187,7 +187,7 @@ function bind(options = {}) {
         notifications: () => notifications,
         outputs: () => (instance.getOutputs ? instance.getOutputs() : {}),
         find: (selector) => container.querySelector(selector),
-        findAll: (selector) => container.querySelectorAll(selector),
+        findAll: (selector) => Array.from(container.querySelectorAll(selector)),
         get driven() {
             return driven;
         },
