@@ -90,8 +90,8 @@ control writing DOM and inline SVG, and it reads Fluent's design tokens through
 ## On the hub
 
 `demo.fidelity` is **`limited`**, and it is closer to `full` than any other
-dataset control in the catalogue — which is worth saying, because the two things
-that hold it back are both small and both named in `demo.limitations`.
+dataset control in the catalogue. That is worth saying, because the one thing
+that holds it back is small and named in `demo.limitations`.
 
 Everything a visitor touches is real. The control performs no dataset mutation
 the harness has to answer for: it does not sort, does not select, does not open
@@ -99,13 +99,15 @@ records and does not turn pages. It reads `sortedRecordIds`, reads two columns,
 and draws. Hover, the arrow keys, the readout and the chart types behave in the
 demo exactly as they do on a form.
 
-Two things do not. **Expand** cannot take over the page, because
+One thing does not. **Expand** cannot take over the page, because
 `context.mode.setFullScreen` is a platform call and the harness is not the
-platform — so the button falls back to growing the chart in place, which is what
-it does on any host without that API. And **Records to chart** is inert, because
-the harness serves every fixture record on one page and its `setPageSize` does
-nothing. A demo where an advertised feature behaves differently from production
-is exactly the situation `limited` exists to describe.
+platform. So the button falls back to growing the chart in place, which is what
+it does on any host without that API. A demo where an advertised feature behaves
+differently from production is exactly the situation `limited` exists to
+describe.
+
+**Records to chart** was a second reason until pcfhub/pcfhub#51. The harness
+now applies a page size, so setting it to 6 draws January to June.
 
 Four presets: **Line**, **Area** and **Columns** over the same twelve months, so
 the domain difference between them is visible rather than described; and

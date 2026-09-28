@@ -85,15 +85,17 @@ not sort, select, open records or turn pages. It reads `sortedRecordIds`, reads
 two columns and draws. Everything a visitor touches — hover, the arrow keys, the
 readout, the chart types — behaves in the demo exactly as it does on a form.
 
-Two things do not, and both are in `demo.limitations`:
+One thing does not, and it is in `demo.limitations`. **Expand** cannot take
+over the page, because `setFullScreen` is a platform call and the harness is
+not the platform. The button falls back to growing the chart in place. That is
+genuinely the same fallback it takes on any host without that API, which is why
+the demo is still honest, but it is not what production does.
 
-1. **Expand** cannot take over the page, because `setFullScreen` is a platform
-   call and the harness is not the platform. The button falls back to growing
-   the chart in place — genuinely the same fallback it takes on any host without
-   that API, which is why the demo is still honest, but it is not what
-   production does.
-2. **`pageSize`** is inert: the harness serves every fixture record on one page
-   and its `setPageSize` is an empty function.
+**`pageSize`** was a second reason until 2026-09-27: the harness served every
+fixture record on one page, and its `setPageSize` was an empty function.
+pcfhub/pcfhub#51 made it applied on the next fetch. It was checked with 0.1.0's
+published bundle: at 6 the Columns preset drew six columns, January to June,
+labelled "6 points, from $420.00 to $690.00".
 
 Had v0.1 shipped without full screen, `full` would have been defensible, and
 that trade was made deliberately in favour of shipping the feature.
