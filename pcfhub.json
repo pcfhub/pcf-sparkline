@@ -3,6 +3,7 @@
   "slug": "pcf-sparkline",
   "name": "Sparkline",
   "tagline": "A compact trend chart over any Dataverse view.",
+  "summary": "Draws the records a view returns as one small series, as a line, an area or columns, sized to sit in a form section beside the values it summarises. Bind a numeric column to **Value** and optionally a column to **Label**.\n\n- The view is the query: change its filter or its sort and the chart follows\n- Every point is a keyboard stop whose value is announced to screen readers\n- Asks for no permissions",
   "category": "data",
   "hosts": ["canvas", "model-driven"],
   "tags": [
