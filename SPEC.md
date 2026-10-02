@@ -33,10 +33,12 @@ dev harness at several widths.
 **`mode.setFullScreen` has no getter.** Nothing on `context` reports whether the
 control is currently in full screen, so the control has to remember what it
 asked for — which is also why the Expand button carries no `aria-pressed`: the
-platform's own chrome can leave full screen without telling the control, and a
+platform's own chrome can leave full screen without the control asking, and a
 stuck `aria-pressed="true"` would then be a lie. Read from
 `@types/powerapps-component-framework`: `Mode` has `setFullScreen(value)` and no
-counterpart.
+counterpart. What the platform does provide is the transition, as
+`fullscreen_open` and `fullscreen_close` in `updatedProperties`, and since 0.2.0
+the control corrects what it remembers from those (see *Demo*).
 
 **Both of the mode APIs this control uses are typed as always present.**
 `trackContainerResize` and `setFullScreen` are non-optional in the type
@@ -99,18 +101,48 @@ Collapse. Until then this repository said canvas was the host without the call
 — in `docs/canvas.md`, the FAQ, the limitations and `dev/smoke.js` — and
 nobody had checked. Microsoft's reference lists it for both hosts.
 
-Running 0.1.0's bundle in the hub's demo showed two things this control does,
-which are what Microsoft's reference says a form would do to it as well —
-neither has been seen on one:
+Running 0.1.0's bundle in the hub's demo showed two things that control did,
+and 0.2.0 fixes both. They are what Microsoft's reference says a form would do
+to it as well; neither has been seen on one.
 
-- **The Expand button loses the focus when the host re-renders.** The click
+- **The Expand button lost the focus when the host re-rendered.** The click
   renders once and puts the focus back on the button; the host's `updateView`
   after `setFullScreen` renders again, and `restoreFocus` was spent on the
-  first.
-- **Leaving by the host's own way out leaves `expanded` set.** The button goes
-  on reading Collapse and the chart keeps its expanded height, in place, until
-  the button is pressed. `updatedProperties` carries `fullscreen_close` then,
-  and this control does not read it.
+  first. `render` now notes which of its own elements has the focus before it
+  throws the markup away — the button, or a point — and gives it back, so a
+  render the user did not cause no longer takes it. The same loss was there for
+  a point being read with the arrow keys when a refresh arrived.
+- **Leaving by the host's own way out left `expanded` set.** The button went on
+  reading Collapse and the chart kept its expanded height, in place, until the
+  button was pressed once for nothing. `updateView` now reads `fullscreen_close`
+  and `fullscreen_open` from `updatedProperties`, as Microsoft's canvas dataset
+  tutorial does, and corrects `expanded` from them. A host that names neither
+  changes nothing.
+
+`dev/host.js` answers `setFullScreen` the same way — the next context names
+the transition — and has `closeFullScreen()` for the host leaving by itself.
+The five checks that cover this fail against 0.1.0's bundle.
+
+**The readout was cut off in a canvas app's full-screen panel**, which is how
+the third fault was found (2026-10-02). Two rules produced it, and neither was
+about full screen:
+
+- **The host's height went to the plot, and it is the control's.** With a box
+  of 160px, 0.1.0 drew a 160px plot and was 208.8px tall — the title and the
+  readout, 48.8px between them, outside the box. Measured in the hub's
+  harness. `hostBox` now hands the number over as `--Sparkline-box`, and the
+  stylesheet takes `--Sparkline-chrome` out of it: 160px of control, 111.2px of
+  plot.
+- **Expanded, the plot was `70vh` whatever the host said.** That is a guess at
+  the room, measured off the window, and a canvas panel is smaller than the
+  window. It now applies only where the host gave no box. A host that gives a
+  box and has no `setFullScreen` (none is known) therefore gets an Expand
+  that changes nothing: the box is the host's, and the control stays in it.
+
+In the harness, with 482px allocated in full screen, the control is 482px and
+the readout ends inside the frame. **On canvas this rests on the panel's height
+arriving as `allocatedHeight`**, which Microsoft's tutorial says it does and
+nobody has read back — see *Not verified*.
 
 **`pageSize`** was a second reason until 2026-09-27: the harness served every
 fixture record on one page, and its `setPageSize` was an empty function.
@@ -137,8 +169,11 @@ is a page that draws the control, not a Power App.
 - **That `mode.setFullScreen(true)` gives this control the form area, and that
   the height then fills it.** Seen on canvas, where it opens a panel (see
   *Demo*); not on a model-driven form. Not read back on canvas either: what
-  `updatedProperties` and `allocatedHeight` carry in the panel, and whether
-  closing it with the platform's button leaves `expanded` set.
+  `updatedProperties` and `allocatedHeight` carry in the panel. Both fixes for
+  the panel rest on those — the control leaves full screen when the platform's
+  button names `fullscreen_close`, and it fits the panel when `allocatedHeight`
+  is the panel's. If the chart stays small inside the panel, the second is not
+  what canvas does.
 - **That `getValue()` on a Currency column returns a number rather than a
   string.** `toNumber` handles both, so this is not a risk to correctness — but
   which one arrives decides whether the string branch is dead code.

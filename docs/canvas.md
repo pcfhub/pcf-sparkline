@@ -48,16 +48,18 @@ you see *"Bind a numeric column to Value to draw a chart"*, that is this.
 
 Canvas is the host that reports an allocated height, so **the box you drag wins
 and the Chart height property is ignored.** Resize the component and the chart
-follows. On a model-driven form it is the other way round — see
+follows. The box holds the whole control: the title, the chart and the readout
+under it. On a model-driven form it is the other way round — see
 [Model-driven apps](model-driven.md).
 
 ## Expanding
 
 **Expand** opens the chart in the app's full-screen panel. The control calls
 `setFullScreen`, and a canvas app answers with a panel over the screen that
-carries a close button of its own above the control's **Collapse**. Set **Allow
-expanding** to `false` to hide the button in a layout that is already the size
-it wants to be.
+carries a close button of its own above the control's **Collapse**. The chart
+takes the room the app reports for the panel, with the readout inside it. Set
+**Allow expanding** to `false` to hide the button in a layout that is already
+the size it wants to be.
 
 ## Reading the output
 

@@ -473,18 +473,39 @@ check(
 /* ---------------------------------------------------------- the size given */
 
 const styleOf = (v) => v.find('.Sparkline-plot').getAttribute('style');
+const boxed = (v) => v.find('.Sparkline-plot').classList.contains('Sparkline-plot--boxed');
 
+/*
+ * The host's height is the control's, and 0.1.0 handed all of it to the plot:
+ * `--Sparkline-height: 900px`, with the title above it and the readout below
+ * it, outside the box. Seen in a canvas app's full-screen panel (2026-10-02),
+ * where the readout was cut off. What the stylesheet does with the box is not
+ * something this DOM can measure; that it is handed over as a box, and not as
+ * the plot's height, is.
+ */
 check(
-    'takes its height from the host where the host has one to give',
-    styleOf(bind({ height: 900 })) === '--Sparkline-height: 900px',
+    'hands the host’s height over as the control’s box, not as the plot’s height',
+    styleOf(bind({ height: 900 })) === '--Sparkline-box: 900px' && boxed(bind({ height: 900 })),
     styleOf(bind({ height: 900 })),
 );
 
 check(
-    'and falls back to the maker’s height where the host reports none',
+    'and falls back to the maker’s height, for the plot, where the host reports none',
     styleOf(bind({ height: -1, inputs: { chartHeight: 200 } })) ===
-        '--Sparkline-height: 200px',
+        '--Sparkline-height: 200px' &&
+        !boxed(bind({ height: -1, inputs: { chartHeight: 200 } })),
     styleOf(bind({ height: -1, inputs: { chartHeight: 200 } })),
+);
+
+const expandedInBox = bind({ height: 600 });
+
+expandedInBox.find('.Sparkline-expand').click();
+expandedInBox.settle();
+
+check(
+    'keeps to the host’s box when expanded, rather than guessing from the window',
+    boxed(expandedInBox) && styleOf(expandedInBox) === '--Sparkline-box: 600px',
+    styleOf(expandedInBox),
 );
 
 /* ------------------------------------------------------------ full screen */
@@ -510,12 +531,96 @@ check(
     dom.document.activeElement === expandable.find('.Sparkline-expand'),
 );
 
+/*
+ * The host's own render, which is the one that took the focus in 0.1.0. After
+ * `setFullScreen` the platform calls `updateView` again, naming the transition;
+ * the control rebuilds its markup, and `restoreFocus` was spent on the render
+ * before. Seen in the hub's demo once it honoured the call (2026-10-02).
+ */
+expandable.settle();
+
+check(
+    'keeps focus on the button through the render the host makes on entering full screen',
+    dom.document.activeElement === expandable.find('.Sparkline-expand') &&
+        expandable.find('.Sparkline-expand').getAttribute('aria-label') === 'resx:Sparkline_Collapse',
+    String(dom.document.activeElement && dom.document.activeElement.className),
+);
+
 expandable.find('.Sparkline-expand').click();
 
 check(
     'asks to leave it again on the second click',
     expandable.calls().includes('setFullScreen(false)'),
     expandable.calls().join(' '),
+);
+
+expandable.settle();
+
+check(
+    'and is collapsed, with the focus still on the button, once the host has left it',
+    !expandable.container.classList.contains('Sparkline--fullscreen') &&
+        expandable.find('.Sparkline-expand').getAttribute('aria-label') === 'resx:Sparkline_Expand' &&
+        dom.document.activeElement === expandable.find('.Sparkline-expand'),
+    expandable.find('.Sparkline-expand').getAttribute('aria-label'),
+);
+
+/*
+ * The host leaves full screen without being asked: a canvas app's panel has a
+ * close button of its own, and so does the bar over the hub's demo. 0.1.0 went
+ * on reading Collapse, at its expanded height, until the button was pressed
+ * once for nothing.
+ */
+const closedByHost = bind();
+
+closedByHost.find('.Sparkline-expand').click();
+closedByHost.settle();
+closedByHost.handle.closeFullScreen();
+closedByHost.settle();
+
+check(
+    'follows the host out of full screen when the host closes it, without calling it back',
+    !closedByHost.container.classList.contains('Sparkline--fullscreen') &&
+        closedByHost.find('.Sparkline-expand').getAttribute('aria-label') === 'resx:Sparkline_Expand' &&
+        !closedByHost.calls().includes('setFullScreen(false)'),
+    closedByHost.calls().join(' '),
+);
+
+closedByHost.find('.Sparkline-expand').click();
+
+check(
+    'and the next press expands again, rather than being spent on catching up',
+    closedByHost.calls().filter((call) => call === 'setFullScreen(true)').length === 2,
+    closedByHost.calls().join(' '),
+);
+
+/*
+ * The same rule for a point. The chart is rebuilt on every `updateView`, and a
+ * refresh or a resize is not something the reader with the arrow keys did.
+ */
+const reading = bind();
+const firstPoint = reading.findAll('.Sparkline-hit')[0];
+
+firstPoint.focus();
+press(firstPoint, 'ArrowRight');
+press(reading.findAll('.Sparkline-hit')[1], 'ArrowRight');
+reading.settle();
+
+check(
+    'keeps focus on the point being read when the host renders again',
+    dom.document.activeElement === reading.findAll('.Sparkline-hit')[2] &&
+        reading.findAll('.Sparkline-hit')[2].getAttribute('tabindex') === '0',
+    String(dom.document.activeElement && dom.document.activeElement.className),
+);
+
+const bystander = bind();
+const elsewhere = dom.createElement('button');
+
+elsewhere.focus();
+bystander.settle();
+
+check(
+    'and leaves focus alone when it was somewhere else on the page',
+    dom.document.activeElement === elsewhere,
 );
 
 /*

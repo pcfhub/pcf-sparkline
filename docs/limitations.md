@@ -18,10 +18,13 @@ Each of these is a constraint that was chosen, not a defect waiting on a fix.
   handed and not the view behind them, so a series that looked sorted would be
   wrong the moment the view held more records than one page.
 
-- **250 records, and 100 by default.** `pageSize` is what the series is drawn
-  from; the platform will not serve more than 250 in a page, and the control
-  never turns a page to accumulate more. Past a few hundred points a sparkline
-  is drawing a texture rather than a trend anyway — aggregate in the view.
+- **One page of records, and 250 at most.** Leave **Records to chart** unset
+  and the series is drawn from the page the host is already fetching: a main
+  grid's *Rows per page*, a subgrid's own setting, the canvas default. Set it
+  and the control asks for that many. The platform will not serve more than
+  250 in a page, and the control never turns a page to accumulate more. Past a
+  few hundred points a sparkline is drawing a texture rather than a trend
+  anyway — aggregate in the view.
 
 - **Nothing is aggregated.** One record is one point. Charting a year of
   transactions gives a point per transaction, not a point per month; build the

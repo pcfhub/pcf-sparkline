@@ -43,5 +43,6 @@ rather than from a view — pick the two the control needs, or it will say so
 rather than draw an empty box.
 :::
 
-The series is drawn from one page of records — 100 by default, and the platform
-will not serve more than 250 in one page. See [Limitations](limitations.md).
+The series is drawn from one page of records — the host's own page size unless
+**Records to chart** says otherwise, and the platform will not serve more than
+250 in one page. See [Limitations](limitations.md).

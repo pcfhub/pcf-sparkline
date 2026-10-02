@@ -206,7 +206,12 @@
              * `loadExactPage` makes: typed as always present, which is a
              * statement about the type definitions rather than about the host,
              * so a control that calls it unguarded is worth being able to break
-             * here. Canvas is the known case.
+             * here.
+             *
+             * **No host is known to lack it.** This said "Canvas is the known
+             * case" until 2026-10-02, when this control's Expand was seen
+             * opening a full-screen panel in a played canvas app. The switch
+             * stays for the unguarded call, not for canvas.
              */
             hasFullScreen: true,
 
@@ -296,6 +301,13 @@
             renderOwed: false,
             /** Every mutator the control called, in order, with its argument. */
             calls: [],
+            /**
+             * What the host has to tell the control about itself on the next
+             * context: `fullscreen_open` and `fullscreen_close`. Full screen has
+             * no getter, and `updatedProperties` is the only place the platform
+             * says it happened.
+             */
+            hostUpdates: [],
         };
 
         var sorting = [];
@@ -769,8 +781,11 @@
                     trackContainerResize: function (value) {
                         log('trackContainerResize', value);
                     },
+                    // Answered the way the platform answers: nothing changes
+                    // in the call, and the next context names the transition.
                     setFullScreen: function (value) {
                         log('setFullScreen', value);
+                        state.hostUpdates.push(value ? 'fullscreen_open' : 'fullscreen_close');
                     },
                     allocatedWidth: o.width,
                     // Pinned at -1 under `heightUnmeasured`, whatever `height`
@@ -804,7 +819,7 @@
                     },
                 },
 
-                updatedProperties: [],
+                updatedProperties: state.hostUpdates.splice(0),
             };
 
             /*
@@ -832,6 +847,14 @@
             },
             settled: function () {
                 state.renderOwed = false;
+            },
+            /**
+             * The host leaves full screen by itself — the close button on a
+             * canvas app's panel, which the control is not asked about. The next
+             * context says so, and nothing calls `setFullScreen`.
+             */
+            closeFullScreen: function () {
+                state.hostUpdates.push('fullscreen_close');
             },
         };
     }

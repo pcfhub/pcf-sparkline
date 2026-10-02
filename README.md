@@ -70,7 +70,7 @@ the schema name of whatever the maker mapped to it.
 | `chartType` | Enum: `line` \| `area` \| `columns` | `line` | How the series is drawn, and which domain it gets |
 | `chartHeight` | Whole.None | `96` | Height in pixels, **used only where the host reports none** |
 | `allowFullScreen` | TwoOptions | `true` | Whether the Expand button is shown |
-| `pageSize` | Whole.None | `100` | How many records the series is drawn from; clamped to 250 |
+| `pageSize` | Whole.None | none | How many records the series is drawn from; unset, the host's own page size. Clamped to 250 |
 
 No outputs. The control reads a view and draws it, and nothing it does is worth
 reporting back to a form or a canvas app.

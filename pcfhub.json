@@ -44,7 +44,7 @@
     ],
     "datasetFixture": "demo/records.json",
     "limitations": [
-      "Expand takes over the browser window here, as it takes the form area on a form: the control calls context.mode.setFullScreen() and the demo honours it. The bar above the chart, with Exit full screen, is this site's, standing in for the platform's own way out. Leave by the bar and the control is not asked, as on a form — its button goes on reading Collapse until it is pressed.",
+      "Expand takes over the browser window here, as it takes the form area on a form: the control calls context.mode.setFullScreen() and the demo honours it. The bar above the chart, with Exit full screen, is this site's, standing in for the platform's own way out. Leave by the bar and the control is not asked, as on a form: it is told, and its button goes back to Expand.",
       "Records to chart works here: the control asks the view for that many records, and the demo returns that many from the fixture, so set it to 6 and the chart draws January to June. The presets ask for 100, more than the twelve months the fixture holds. On a real view it is how many records the series is drawn from, capped by the platform at 250.",
       "The order is the fixture's. On a view the order is the view's own sort, applied server-side — this control never reorders records in the browser, because a client-side sort would reorder only the records it was handed and not the view behind them. There is no sort behind this origin for it to follow."
     ],

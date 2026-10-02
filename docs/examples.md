@@ -24,8 +24,8 @@ component:
 | Records to chart | `12` |
 | Allow expanding | `true` |
 
-`Records to chart` is set to 12 rather than left at 100 on purpose: the view
-returns months in ascending order, so a page of 100 would quietly start
+`Records to chart` is set to 12 rather than left unset on purpose: the view
+returns months in ascending order, so a longer page would quietly start
 including the previous years as the data grows.
 
 ## Variance against a target, as columns

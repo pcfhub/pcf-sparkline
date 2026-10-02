@@ -49,6 +49,16 @@
     /* index.ts sets the real value on .Sparkline-plot; this is the floor. */
     --Sparkline-height: 96px;
 
+    /*
+      What this control draws around the plot, which a host's box has to hold as
+      well: the head, the readout, and the gap on either side of the plot. Each
+      term is the rule that sizes it further down, so the three move together
+      — the readout has a height rather than a minimum for exactly this.
+    */
+    --Sparkline-chrome: calc(
+        24px + 1.4 * var(--fontSizeBase200, 12px) + 2 * var(--spacingVerticalXS, 4px)
+    );
+
     font-family: var(--fontFamilyBase, "Segoe UI", system-ui, sans-serif);
     font-size: var(--fontSizeBase300, 14px);
     color: var(--Sparkline-foreground);
@@ -161,6 +171,20 @@
 }
 
 /*
+  A host that allocates a height allocates it to the control, and the plot is
+  what is left once the title and the readout have theirs.
+
+  0.1.0 set the plot to the whole of it, so the control was taller than its box
+  by `--Sparkline-chrome` and the readout fell outside: under the edge of a
+  canvas app's full-screen panel, where it was seen, and of any box a maker
+  drags. The floor is the head's own height — a box too small for a chart
+  still gets something to point at rather than a negative height.
+*/
+.Sparkline-plot--boxed {
+    height: max(24px, calc(var(--Sparkline-box) - var(--Sparkline-chrome)));
+}
+
+/*
   The expanded state grows in place. It is deliberately not `position: fixed`.
 
   A code component that pins itself over the form escapes the form's stacking
@@ -169,8 +193,13 @@
   already given this control the whole form area and this height simply fills
   it; where it does not, growing in place is a smaller promise and one the
   control can keep on its own.
+
+  Only where the host gave no box. `70vh` is a guess at the room, measured off
+  the window, and a host that says how much room there is has made it
+  unnecessary: a canvas app's full-screen panel is smaller than the window, and
+  in 0.1.0 this rule drew the plot past the panel's edge.
 */
-.Sparkline--fullscreen .Sparkline-plot {
+.Sparkline--fullscreen .Sparkline-plot:not(.Sparkline-plot--boxed) {
     height: 70vh;
 }
 
@@ -274,7 +303,9 @@
 
 .Sparkline-readout {
     margin: 0;
-    min-height: 1.4em;
+    /* A height, not a minimum: `--Sparkline-chrome` counts on it. */
+    height: 1.4em;
+    line-height: 1.4;
     color: var(--Sparkline-foreground-secondary);
     font-size: var(--fontSizeBase200, 12px);
     overflow: hidden;

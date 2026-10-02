@@ -72,7 +72,8 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
 
     /**
      * Full screen is a mode with no getter. Nothing on `context` reports
-     * whether the control is in it, so the control remembers what it asked for.
+     * whether the control is in it, so the control remembers what it asked for
+     * — and corrects that from what the host says happened, in `followHost`.
      */
     private expanded = false;
 
@@ -87,6 +88,9 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
 
     /** The expand button is destroyed by the render its own click caused. */
     private restoreFocus = false;
+
+    /** The expand button of the current render, so focus on it can be recognised. */
+    private expand: HTMLElement | null = null;
 
     public init(
         context: ComponentFramework.Context<IInputs>,
@@ -120,9 +124,42 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         this.context = context;
 
+        this.followHost(context);
         this.applyTheme(context);
         this.applyPageSize(context, context.parameters.records);
         this.render(context);
+    }
+
+    /**
+     * Full screen, as the host says it went.
+     *
+     * `expanded` is what this control asked for, and the host can leave full
+     * screen without being asked: a canvas app's panel has a close button of
+     * its own, and so does the bar over the hub's demo. With only its own
+     * request to go on, the control went on reading Collapse, and kept its
+     * expanded height in place, until the button was pressed once for nothing.
+     *
+     * `updatedProperties` is how the platform reports the transition —
+     * `fullscreen_close` and `fullscreen_open`, which Microsoft's canvas
+     * dataset tutorial reads the same way, and the hub's demo sends. A host
+     * that names neither changes nothing here, so the control's own request
+     * stands, as it did.
+     *
+     * Read defensively: the array is typed as always present, and `npm start`
+     * has handed over less than the types promise before.
+     */
+    private followHost(context: ComponentFramework.Context<IInputs>): void {
+        const updated: unknown = context.updatedProperties;
+
+        if (!Array.isArray(updated)) {
+            return;
+        }
+
+        if (updated.includes('fullscreen_close')) {
+            this.expanded = false;
+        } else if (updated.includes('fullscreen_open')) {
+            this.expanded = true;
+        }
     }
 
     /**
@@ -145,6 +182,7 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
 
         this.expanded = false;
         this.hits = [];
+        this.expand = null;
         this.readout = null;
         this.marker = null;
         this.geometry = null;
@@ -245,10 +283,28 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
         const getString = (id: string): string => context.resources.getString(id);
         const dataset = context.parameters.records;
 
+        /*
+         * What had the focus, read before the markup it sits in is thrown away.
+         *
+         * Every render rebuilds the chart, and not every render is this
+         * control's own: the host calls `updateView` when it enters or leaves
+         * full screen, when the view refreshes, when the box is resized. A
+         * render the user did not cause must not take the focus from under
+         * them — it left the Expand button on the host's re-render after
+         * `setFullScreen`, one render after `restoreFocus` had put it back, and
+         * a point being read with the arrow keys lost it the same way.
+         *
+         * By identity against this control's own elements, so focus anywhere
+         * else on the page is left exactly where it is.
+         */
+        const focused = document.activeElement as HTMLElement | null;
+        const onExpand = this.restoreFocus || (focused !== null && focused === this.expand);
+        const onPoint = focused !== null && this.hits.includes(focused);
+
+        this.restoreFocus = false;
+
         this.container.innerHTML = '';
-        this.hits = [];
-        this.readout = null;
-        this.marker = null;
+        this.forgetParts();
 
         // Canvas relies on this; a model-driven form hides the section itself.
         if (!context.mode.isVisible) {
@@ -305,13 +361,29 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
         this.container.appendChild(this.readoutRow(getString));
         this.container.appendChild(this.caption(series, getString));
 
-        if (this.restoreFocus) {
-            this.restoreFocus = false;
-            const button = this.container.querySelector('.Sparkline-expand');
-            if (button) {
-                (button as HTMLElement).focus();
-            }
+        if (onExpand) {
+            /*
+             * `expand` is null when the maker turned expanding off between the
+             * two renders; there is then nothing of this control's to hold it.
+             */
+            this.expand?.focus();
+        } else if (onPoint) {
+            this.hits[this.active]?.focus();
         }
+    }
+
+    /**
+     * Drop the references into markup that has just been thrown away.
+     *
+     * A method rather than four assignments in `render`, and not for tidiness:
+     * assigning `this.expand = null` there narrows it to `null` for the rest of
+     * that function, and the compiler cannot see `expandButton` fill it again.
+     */
+    private forgetParts(): void {
+        this.hits = [];
+        this.expand = null;
+        this.readout = null;
+        this.marker = null;
     }
 
     /**
@@ -398,19 +470,32 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
     }
 
     /**
-     * The height the plot gets, in pixels.
+     * The box the host gave the whole control, in pixels, or `null` where it
+     * gave none.
      *
-     * The host wins where it reports one. `-1` means "no limit" and `0` means
-     * "not laid out yet"; neither is a height, so both fall through to the
-     * maker's property, and that in turn falls through to a constant.
+     * `-1` means "no limit" and `0` means "not laid out yet"; neither is a
+     * height. A canvas app reports one, and so does any host for the room it
+     * hands over in full screen.
+     *
+     * **It is the control's height, not the plot's.** 0.1.0 gave all of it to
+     * the plot, so the title above and the readout below were drawn outside
+     * the box the maker dragged: seen in a canvas app's full-screen panel on
+     * 2026-10-02, where the readout was cut off under the chart. The
+     * stylesheet takes the title and the readout out of it (`--boxed`).
      */
-    private height(context: ComponentFramework.Context<IInputs>): number {
+    private hostBox(context: ComponentFramework.Context<IInputs>): number | null {
         const allocated = context.mode.allocatedHeight;
-        if (typeof allocated === 'number' && allocated > 0) {
-            return allocated;
-        }
 
+        return typeof allocated === 'number' && allocated > 0 ? allocated : null;
+    }
+
+    /**
+     * The height the plot gets where the host gave no box: the maker's
+     * property, and a constant where that is unset too.
+     */
+    private chartHeight(context: ComponentFramework.Context<IInputs>): number {
         const raw = context.parameters.chartHeight.raw;
+
         return typeof raw === 'number' && raw > 0 ? Math.trunc(raw) : FALLBACK_HEIGHT;
     }
 
@@ -461,6 +546,8 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
         button.appendChild(expandGlyph(this.expanded));
         button.addEventListener('click', () => this.toggleExpand(context));
 
+        this.expand = button;
+
         return button;
     }
 
@@ -497,13 +584,22 @@ export class Sparkline implements ComponentFramework.StandardControl<IInputs, IO
         const geometry = this.geometry as Geometry;
 
         const plot = document.createElement('div');
-        plot.className = 'Sparkline-plot';
+        const box = this.hostBox(context);
+
         /*
          * The one number the host gets a say in, and it is set as a custom
          * property rather than a height so the stylesheet keeps ownership of
-         * what happens to it when the chart is expanded.
+         * what becomes of it: the host's box has the title and the readout
+         * taken out of it, the maker's chart height is the plot's as it stands,
+         * and expanding on a host that gave no box is the stylesheet's alone.
          */
-        plot.setAttribute('style', `--Sparkline-height: ${this.height(context)}px`);
+        if (box === null) {
+            plot.className = 'Sparkline-plot';
+            plot.setAttribute('style', `--Sparkline-height: ${this.chartHeight(context)}px`);
+        } else {
+            plot.className = 'Sparkline-plot Sparkline-plot--boxed';
+            plot.setAttribute('style', `--Sparkline-box: ${box}px`);
+        }
 
         const svg = document.createElementNS(SVG_NS, 'svg');
         svg.setAttribute('class', 'Sparkline-svg');
