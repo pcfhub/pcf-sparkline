@@ -519,8 +519,10 @@ check(
 );
 
 /*
- * The host that has no full screen to give. Canvas is the known case, and the
- * hub's demo harness is the one the public sees.
+ * The host that has no full screen to give. None is known: canvas was assumed
+ * to be one until it was seen opening a full-screen panel (2026-10-02), and the
+ * hub's demo honours the call too. The guard stays, because "typed as always
+ * present" is a claim about the type definitions and not about the host.
  */
 const noFullScreen = bind({ quirks: { hasFullScreen: false } });
 

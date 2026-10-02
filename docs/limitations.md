@@ -32,10 +32,11 @@ Each of these is a constraint that was chosen, not a defect waiting on a fix.
   [the API reference](api.md#chart-type-and-the-domain-that-comes-with-it) for
   why. It is stated here because it surprises people.
 
-- **Expand grows the chart; it does not cover the page.** Where the platform
-  offers `setFullScreen` the control asks for it and the host gives it the form
-  area. Everywhere else — canvas, and the demo on this site — the chart grows in
-  place instead. A code component that pins itself over the form with
+- **Expand is the host's full screen, not the control's.** The control asks
+  for `setFullScreen` and the host decides what that is: the form area on a
+  model-driven form, a panel over the screen in a canvas app, the browser
+  window in the demo on this site. On a host without the call the chart grows
+  in place instead. A code component that pins itself over the form with
   `position: fixed` escapes the form's stacking context, covers the command bar,
   and takes ownership of an Esc key it cannot promise to receive. Growing in
   place is a smaller promise and one the control can keep.

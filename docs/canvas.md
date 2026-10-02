@@ -53,10 +53,11 @@ follows. On a model-driven form it is the other way round — see
 
 ## Expanding
 
-**Expand** grows the chart in place in canvas rather than taking over the
-screen: `setFullScreen` is a model-driven behaviour, and the control does not
-pretend to have it. Set **Allow expanding** to `false` to hide the button in a
-layout that is already the size it wants to be.
+**Expand** opens the chart in the app's full-screen panel. The control calls
+`setFullScreen`, and a canvas app answers with a panel over the screen that
+carries a close button of its own above the control's **Collapse**. Set **Allow
+expanding** to `false` to hide the button in a layout that is already the size
+it wants to be.
 
 ## Reading the output
 

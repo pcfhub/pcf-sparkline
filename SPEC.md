@@ -77,19 +77,40 @@ observed for this control** — see *Not verified*.
 
 ## Demo
 
-`fidelity: "limited"`, and it is closer to `full` than any other dataset control
-in the catalogue, which is the part worth recording.
+`fidelity: "mocked"`: the records are a fixture, and nothing else in the demo
+differs from a form.
 
 The control performs no dataset mutation the harness has to answer for: it does
 not sort, select, open records or turn pages. It reads `sortedRecordIds`, reads
 two columns and draws. Everything a visitor touches — hover, the arrow keys, the
 readout, the chart types — behaves in the demo exactly as it does on a form.
 
-One thing does not, and it is in `demo.limitations`. **Expand** cannot take
-over the page, because `setFullScreen` is a platform call and the harness is
-not the platform. The button falls back to growing the chart in place. That is
-genuinely the same fallback it takes on any host without that API, which is why
-the demo is still honest, but it is not what production does.
+**Expand** was the reason it was `limited` until 2026-10-02. The harness's
+`setFullScreen` was an empty function, so the button took the fallback it keeps
+for a host without the call. The hub now honours it: the demo covers the
+browser window, the control is re-rendered with `fullscreen_open` in
+`updatedProperties` and a real `allocatedHeight`, and a bar of the hub's own
+stands in for the platform's way out.
+
+**A canvas app has `setFullScreen`, and it works.** Seen in a played canvas app
+on 2026-10-02, over the Active Contacts view: Expand opened the control in a
+panel over the screen, with the platform's own close button above the control's
+Collapse. Until then this repository said canvas was the host without the call
+— in `docs/canvas.md`, the FAQ, the limitations and `dev/smoke.js` — and
+nobody had checked. Microsoft's reference lists it for both hosts.
+
+Running 0.1.0's bundle in the hub's demo showed two things this control does,
+which are what Microsoft's reference says a form would do to it as well —
+neither has been seen on one:
+
+- **The Expand button loses the focus when the host re-renders.** The click
+  renders once and puts the focus back on the button; the host's `updateView`
+  after `setFullScreen` renders again, and `restoreFocus` was spent on the
+  first.
+- **Leaving by the host's own way out leaves `expanded` set.** The button goes
+  on reading Collapse and the chart keeps its expanded height, in place, until
+  the button is pressed. `updatedProperties` carries `fullscreen_close` then,
+  and this control does not read it.
 
 **`pageSize`** was a second reason until 2026-09-27: the harness served every
 fixture record on one page, and its `setPageSize` was an empty function.
@@ -98,7 +119,9 @@ published bundle: at 6 the Columns preset drew six columns, January to June,
 labelled "6 points, from $420.00 to $690.00".
 
 Had v0.1 shipped without full screen, `full` would have been defensible, and
-that trade was made deliberately in favour of shipping the feature.
+that trade was made deliberately in favour of shipping the feature. It is
+`mocked` rather than `full` now because the hub's tiers say what is not real,
+and the data is not: every other dataset control over a fixture says the same.
 
 ## Not verified
 
@@ -112,8 +135,10 @@ is a page that draws the control, not a Power App.
   the dev harness's own **Allocated height** box exercises both branches but
   supplies the number itself.
 - **That `mode.setFullScreen(true)` gives this control the form area, and that
-  the height then fills it.** The fallback path is exercised locally; the
-  platform path is not.
+  the height then fills it.** Seen on canvas, where it opens a panel (see
+  *Demo*); not on a model-driven form. Not read back on canvas either: what
+  `updatedProperties` and `allocatedHeight` carry in the panel, and whether
+  closing it with the platform's button leaves `expanded` set.
 - **That `getValue()` on a Currency column returns a number rather than a
   string.** `toNumber` handles both, so this is not a risk to correctness — but
   which one arrives decides whether the string branch is dead code.

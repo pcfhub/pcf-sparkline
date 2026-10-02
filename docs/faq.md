@@ -35,12 +35,13 @@ the ratios — while line and area scale to the range of the data. Same numbers,
 different question being answered. See
 [the API reference](api.md#chart-type-and-the-domain-that-comes-with-it).
 
-## Expand does not fill the screen
+## What does Expand do?
 
-In canvas apps, and in the demo on this site, there is no `setFullScreen` for
-the control to call, so it grows in place instead. On a model-driven form it
-asks the platform for the form area and the platform gives it. This is listed
-under [Limitations](limitations.md).
+It asks the host for full screen, and the host decides what that looks like. A
+model-driven form gives the control the form area. A canvas app opens it in a
+panel over the screen, with a close button of its own. The demo on this site
+gives it the browser window. On a host with no `setFullScreen` at all the chart
+grows in place instead — see [Limitations](limitations.md).
 
 ## Can I change the colour?
 

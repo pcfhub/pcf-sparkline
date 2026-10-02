@@ -40,9 +40,11 @@ flattens the only thing it had to say. Switching chart type therefore changes
 what the picture means, which is why the two live behind one property and not
 behind a hidden setting.
 
-**Expand grows the chart; it does not cover the page.** Where the platform
-offers `setFullScreen` the control asks for it and the host gives it the form
-area. Where it does not — canvas, and the hub's demo — the chart grows in place
+**Expand is the host's full screen, never a box the control pins over the
+page.** The control asks for `setFullScreen` and the host decides what that is:
+a model-driven form gives it the form area, a canvas app opens it in a panel
+over the screen with a close button of its own, and the hub's demo gives it the
+browser window. Only on a host without the call does the chart grow in place
 instead. A code component that pins itself over the form with `position: fixed`
 escapes the form's stacking context, covers the command bar, and takes ownership
 of an Esc key it cannot promise to receive.
@@ -89,9 +91,8 @@ control writing DOM and inline SVG, and it reads Fluent's design tokens through
 
 ## On the hub
 
-`demo.fidelity` is **`limited`**, and it is closer to `full` than any other
-dataset control in the catalogue. That is worth saying, because the one thing
-that holds it back is small and named in `demo.limitations`.
+`demo.fidelity` is **`mocked`**: the records are a fixture, and that is the
+only thing in the demo that is not what a form has.
 
 Everything a visitor touches is real. The control performs no dataset mutation
 the harness has to answer for: it does not sort, does not select, does not open
@@ -99,12 +100,12 @@ records and does not turn pages. It reads `sortedRecordIds`, reads two columns,
 and draws. Hover, the arrow keys, the readout and the chart types behave in the
 demo exactly as they do on a form.
 
-One thing does not. **Expand** cannot take over the page, because
-`context.mode.setFullScreen` is a platform call and the harness is not the
-platform. So the button falls back to growing the chart in place, which is what
-it does on any host without that API. A demo where an advertised feature behaves
-differently from production is exactly the situation `limited` exists to
-describe.
+It was `limited` until the hub honoured `context.mode.setFullScreen`
+(2026-10-02). Before that the call went nowhere, **Expand** fell back to
+growing the chart in place, and a demo where an advertised feature behaves
+differently from production is exactly what `limited` exists to describe. The
+demo now gives the control the browser window, with a bar of its own standing
+in for the platform's way out.
 
 **Records to chart** was a second reason until pcfhub/pcfhub#51. The harness
 now applies a page size, so setting it to 6 draws January to June.
