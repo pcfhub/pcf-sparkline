@@ -13,6 +13,8 @@
     "svg",
     "accessible"
   ],
+  "supportLevel": "reference",
+  "builtWith": "ai",
   "control": {
     "namespace": "PCFHub",
     "constructor": "Sparkline",
